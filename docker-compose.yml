@@ -1,0 +1,44 @@
+version: "3.7"
+
+services:
+  web-server:
+    container_name: "novel-web"
+    build:
+      context: .
+      dockerfile: ./app/Dockerfile
+    volumes:
+      - ./app:/usr/src/app
+    ports:
+      - "3000:3000"
+    tty: true
+    stdin_open: true
+    depends_on:
+      - database
+
+  database:
+    container_name: "novel-db"
+    image: mysql:5.7
+    volumes:
+      - ./mysql:/var/lib/mysql
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=root
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=root
+
+  phpmyadmin:
+    container_name: "novel-phpmyadmin"
+    image: phpmyadmin/phpmyadmin
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=database
+      - PMA_USER=root
+      - PMA_PASSWORD=root
+    links:
+      - database
+    ports:
+      - 4000:80
+    volumes:
+      - ./phpmyadmin/sessions:/sessions
